@@ -41,7 +41,17 @@ class Repo(unittest.TestCase):
     def test_root_matches_the_reel(self):
         # trader/ is the skills' run-time output folder (git-ignored), not part of the repo
         root = sorted(d for d in os.listdir(ROOT) if not d.startswith(".git") and d != "trader")
-        self.assertEqual(root, sorted([".claude-plugin", "LICENSE", "README.md", "tests"] + SKILLS))
+        self.assertEqual(root, sorted([".claude", ".claude-plugin", "LICENSE", "README.md", "tests"] + SKILLS))
+
+    def test_project_skills_link_to_the_root_folders(self):
+        # .claude/skills/ holds one symlink per skill, so Claude Code loads them as project skills
+        sdir = os.path.join(ROOT, ".claude", "skills")
+        self.assertEqual(sorted(os.listdir(sdir)), sorted(SKILLS))
+        for s in SKILLS:
+            link = os.path.join(sdir, s)
+            self.assertTrue(os.path.islink(link), s)
+            self.assertEqual(os.readlink(link), os.path.join("..", "..", s))
+            self.assertTrue(os.path.isfile(os.path.join(link, "SKILL.md")), s)
 
     def test_frontmatter_name_and_description(self):
         for s in SKILLS:
