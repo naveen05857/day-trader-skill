@@ -1,2 +1,3 @@
 # Scan output written by the skills at run time (watchlist, universe, plans)
 trader/
+__pycache__/
